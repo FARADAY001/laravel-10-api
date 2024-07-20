@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Traits\ApiResponseTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use App\Http\Resources\ProjectRessource;
+use App\Http\Resources\ProjectResource;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,7 +17,22 @@ class ProjectController extends Controller
 
     use ApiResponseTrait;
     /**
-     * Display a listing of the resource.
+    * Display a listing of the resource.
+    *
+    * @OA\Get(
+    *     path="/api/project",
+    *     summary="Liste tous les projets",
+    *     operationId="getprojects",
+    *     tags={"Projects"},
+    *     @OA\Response(
+    *         response=200,
+    *         description="Liste des projects",
+    *         @OA\Schema(
+    *             type="array",
+    *             @OA\Items(ref="#/definitions/Item")
+    *         ),
+    *     ),
+    * )
      */
     public function index()
     {
@@ -48,14 +63,55 @@ class ProjectController extends Controller
 
         //$projects = Project::where('user_id', Auth::user()->id)->get();
 
-        return response()->json(
-            ProjectRessource::collection(Project::where('user_id', Auth::user()->id)->get())
-        );
+        // return ProjectResource::collection(Project::where('user_id', Auth::user()->id)->get());
+        return response()->json(Project::all());
 
     }
 
     /**
      * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/store",
+     *     summary="Enregistrer un nouveau projet",
+     *
+     *     @OA\Parameter(
+     *         name="name",
+     *         in="query",
+     *         description="Le nom du projet",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="description",
+     *         in="query",
+     *         description="La description du projet",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="start_date",
+     *         in="query",
+     *         description="La date de debut du projet",
+     *         required=false,
+     *         @OA\Schema(type="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="end_date",
+     *         in="query",
+     *         description="La date de fin du projet",
+     *         required=false,
+     *         @OA\Schema(type="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="rate",
+     *         in="query",
+     *         description="La note du projet",
+     *         required=false,
+     *         @OA\Schema(type="date")
+     *     ),
+     *     @OA\Response(response="201", description="Projet enregistre avec succes"),
+     *     @OA\Response(response="422", description="Validation errors")
+     * )
      */
     public function store(StoreProjectRequest $request)
     {
@@ -102,7 +158,8 @@ class ProjectController extends Controller
             return $this->unauthorizedResponse("Vous n'êtes pas autorisé à accèder");
         }
 
-        return response()->json($project);
+        //return response()->json($project);
+        return new ProjectResource($project);
     }
 
     /**

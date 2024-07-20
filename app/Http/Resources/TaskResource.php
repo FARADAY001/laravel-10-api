@@ -16,7 +16,8 @@ class TaskResource extends JsonResource
     {
         return [
             'name' => $this->name,
-            'description' => $this->description
+            'description' => $this->description,
+            'project' => ProjectResource::collection($this->projects)
         ];
     }
 }

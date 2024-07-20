@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // privé
-Route::apiResource('/project', ProjectController::class)->middleware('auth:sanctum');
+Route::apiResource('/project', ProjectController::class);//->middleware('auth:sanctum');
 Route::post('/project/search', [ProjectController::class, 'search'])->middleware('auth:sanctum');
 Route::apiResource('project.task', TaskController::class)->middleware('auth:sanctum');
 
